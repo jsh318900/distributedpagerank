@@ -1,4 +1,5 @@
 import requests
+from multiprocessing import Pipe
 
 
 def get_graph(word, node_number):
@@ -48,6 +49,24 @@ def get_graph(word, node_number):
     print(graph)
     return graph
 
+def get_graph_in_pipes(graph):
+	nodes = graph.keys()
+	send_pipes = {}
+	recv_pipes = {}
 
+	for node in nodes:
+		for neighbor in graph[node]:
+			send, recv = Pipe()
+			
+			if node not in send_pipes:
+				send_pipes[node] = []
+			if neighbor not in recv_pipes:
+				recv_pipes[neighbor] = []
 
-get_graph("Albert Einstein",50)
+			send_pipes[node].append((neighbor, send))
+			recv_pipes[neighbor].append((node, recv))
+
+	return send_pipes, recv_pipes
+
+graph = get_graph("Albert Einstein",50)
+print(get_graph_in_pipes(graph))

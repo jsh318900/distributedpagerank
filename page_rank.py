@@ -1,4 +1,7 @@
 import random
+from get_links import get_graph, get_graph_in_pipes
+from multiprocessing import Process, SimpleQueue
+
 
 def page_rank_algorithm(number_nodes, reset_probability):
     start_walks = 50 #TODO: this number should be changed to K, which is c*log(number_nodes)
@@ -40,4 +43,36 @@ class node:
         
 #    def get_page_rank():
 #        return (self.coupon_count/(
+
+
+def main():
+    # TODO setup GUI
+    word = "Albert Einstein"
+    num_nodes = 50
+
+    graph = get_graph(word, num_nodes)
+    send_pipes, recv_pipes = get_graph_in_pipes(graph)
+    results_queue = SimpleQueue()
+    processes = []
+
+    for node in graph.keys():
+        """
+        Starts randomwalks on each node
+        Each node should put their calculated pagerank in queue in the form of tuple (node_name, pagerank)
+        """
+        p = Process(target=page_rank_algorithm, args=(node, graph, send_pipes[node], recv_pipes[node], results_queue)) #TODO change arguments to function accordingly
+        processes.append(p)
+        p.start()
+
+
+    #Waiting for all processes to finish
+    for p in processes:
+        p.join()
+
+    """
+    TODO find node with greates pagerank value and update GUI
+    """
+    while not results_queue.empty():
+        print(results_queue.get())
+
 
