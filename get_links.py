@@ -43,30 +43,33 @@ def get_graph(word, node_number):
                         graph[w].append(l["title"])
                         relate.add(l["title"])
                         if count>=node_number:
-                            print(graph)
+                            #print(graph)
                             return graph
 
     print(graph)
     return graph
 
 def get_graph_in_pipes(graph):
-	nodes = graph.keys()
-	send_pipes = {}
-	recv_pipes = {}
+    nodes = graph.keys()
+    send_pipes = {}
+    recv_pipes = {}
 
-	for node in nodes:
-		for neighbor in graph[node]:
-			send, recv = Pipe()
+    for node in nodes:
+        if node not in send_pipes:
+            send_pipes[node] = []
+        if node not in recv_pipes:
+            recv_pipes[node] = []
+
+        for neighbor in graph[node]:
+            send, recv = Pipe()
 			
-			if node not in send_pipes:
-				send_pipes[node] = []
-			if neighbor not in recv_pipes:
-				recv_pipes[neighbor] = []
+            if neighbor not in recv_pipes:
+                recv_pipes[neighbor] = []
 
-			send_pipes[node].append((neighbor, send))
-			recv_pipes[neighbor].append((node, recv))
+            send_pipes[node].append((neighbor, send))
+            recv_pipes[neighbor].append((node, recv))
 
-	return send_pipes, recv_pipes
+    return send_pipes, recv_pipes
 
-graph = get_graph("Albert Einstein",50)
-print(get_graph_in_pipes(graph))
+#graph = get_graph("Albert Einstein",50)
+#print(get_graph_in_pipes(graph))
