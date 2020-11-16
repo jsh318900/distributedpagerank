@@ -11,8 +11,9 @@ def nodeEffort(coupon_count, title, send_pipes, recv_pipes, results_queue, reset
         
         new_coupon_cnt = 0
         for neighbor, pipe in recv_pipes:
-            new_coupon_cnt += pipe.recv()
-            results_queue.put((title, new_coupon_cnt))
+            if pipe.poll(10):
+                new_coupon_cnt += pipe.recv()
+        results_queue.put((title, new_coupon_cnt))
         return
 
     #initializing counts
@@ -32,7 +33,8 @@ def nodeEffort(coupon_count, title, send_pipes, recv_pipes, results_queue, reset
 
     #receive num visits from neighbors
     for neighbor, pipe in recv_pipes:
-        new_coupon_cnt += pipe.recv()
+        if pipe.poll(10):
+            new_coupon_cnt += pipe.recv()
 
     #submitting result
     results_queue.put((title, new_coupon_cnt))
