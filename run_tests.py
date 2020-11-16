@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
 	for i in range(len(y_axis)):
 		y_axis[i] *= 1e3
-
+	plt.clf()
 	plt.xlabel("number of nodes")
 	plt.ylabel("time in miliseconds")
 	plt.plot(x_axis, y_axis)
