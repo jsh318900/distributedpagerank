@@ -8,6 +8,11 @@ def nodeEffort(coupon_count, title, send_pipes, recv_pipes, results_queue, reset
     if coupon_count == 0:
         for neighbor, pipe in send_pipes:
             pipe.send(0)
+        
+        new_coupon_cnt = 0
+        for neighbor, pipe in recv_pipes:
+            new_coupon_cnt += pipe.recv()
+            results_queue.put((title, new_coupon_cnt))
         return
 
     #initializing counts
@@ -80,11 +85,11 @@ def pagerank(num_rounds, initial_coupon_count, graph, send_pipes, recv_pipes, re
 def main():
     # TODO setup GUI
     # Constants
-    word = "Albert Einstein"
+    word = "Computational complexity"
     start_num_walks = 100 #TODO: this number should be changed to K, which is c*log(number_nodes)
-    num_rounds = 50 #TODO: this number should be changed to B*log(number_nodes/reset_probability)
-    num_nodes = 50
-    reset_probability = 0.1
+    num_rounds = 100 #TODO: this number should be changed to B*log(number_nodes/reset_probability)
+    num_nodes = 100
+    reset_probability = 0.05
 
     graph = get_graph(word, num_nodes)
     send_pipes, recv_pipes = get_graph_in_pipes(graph)
