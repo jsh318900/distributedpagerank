@@ -3,44 +3,27 @@ from get_links import get_graph, get_graph_in_pipes
 from multiprocessing import Process, SimpleQueue
 
 # start_num_walks is a constant, title is the key of the dictionary, neighbors is the value of the dictionary
-def nodeEffort(coupon_count, title, send_pipes, recv_pipes, results_queue, reset_probability):
+def nodeEffort(coupon_count, title, neighbors, results_queue, reset_probability):
     #If coupon_count is 0 this node is finished for this round
     if coupon_count == 0:
-        for neighbor, pipe in send_pipes:
-            pipe.send(0)
-        
-        new_coupon_cnt = 0
-        for neighbor, pipe in recv_pipes:
-            if pipe.poll():
-                new_coupon_cnt += pipe.recv()
-        results_queue.put((title, new_coupon_cnt))
         return
 
     #initializing counts
     new_coupon_cnt = 0
     visit_counts = {}
-    for neighbor, pipe in send_pipes:
+    for neighbor in neighbors:
         visit_counts[neighbor] = 0
 
     #perform random walks
     for x in range(coupon_count):
-        if len(send_pipes) > 0 and random.random() < (1 - reset_probability):
-            visit_counts[send_pipes[random.randint(0, len(send_pipes) - 1)][0]] += 1
+        if len(neighbors) > 0 and random.random() < (1 - reset_probability):
+            visit_counts[neighbors[random.randint(0, len(neighbors) - 1)]] += 1
 
-    #Send num visits to neighbors
-    for neighbor, pipe in send_pipes:
-        pipe.send(visit_counts[neighbor])
-
-    #receive num visits from neighbors
-    for neighbor, pipe in recv_pipes:
-        if pipe.poll():
-            new_coupon_cnt += pipe.recv()
-
-    #submitting result
-    results_queue.put((title, new_coupon_cnt))
+    for neighbor in neighbors:
+        results_queue.put((neighbor, visit_counts[neighbor]))
     
 
-def pagerank(num_rounds, initial_coupon_count, graph, send_pipes, recv_pipes, reset_probability):
+def pagerank(num_rounds, initial_coupon_count, graph, reset_probability):
 	
 	# Initial Setup
     coupon_count = {}
@@ -56,18 +39,28 @@ def pagerank(num_rounds, initial_coupon_count, graph, send_pipes, recv_pipes, re
         processes = []
         results_queue = SimpleQueue()
         for node in graph.keys():
-            p = Process(target=nodeEffort, args=(coupon_count[node], node, send_pipes[node], recv_pipes[node], results_queue, reset_probability))
-            processes.append(p)
-            p.start()
+            if node in coupon_count and coupon_count[node] > 0:
+                p = Process(target=nodeEffort, args=(coupon_count[node], node, graph[node], results_queue, reset_probability))
+                processes.append(p)
+                p.start()
 
         #Wait for each process to be done
         for p in processes:
             p.join()
 
+        #reset coupon count for each node
+        for node in coupon_count.keys():
+            coupon_count[node] = 0
+
         #compute new coupon count and visits
         while not results_queue.empty():
             node, count = results_queue.get()
-            coupon_count[node] = count
+            if node not in coupon_count:
+                coupon_count[node] = 0
+            if node not in num_visits:
+                num_visits[node] = 0
+
+            coupon_count[node] += count
             num_visits[node] += count
         
         num_rounds -= 1
@@ -95,9 +88,8 @@ def main():
     reset_probability = 0.05
 
     graph = get_graph(word, num_nodes)
-    send_pipes, recv_pipes = get_graph_in_pipes(graph)
     
-    print(pagerank(num_rounds, start_num_walks, graph, send_pipes, recv_pipes, reset_probability))
+    print(pagerank(num_rounds, start_num_walks, graph, reset_probability))
 
 
 if __name__ == '__main__':
