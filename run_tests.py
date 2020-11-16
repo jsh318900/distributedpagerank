@@ -34,7 +34,7 @@ if __name__ == '__main__':
 	plt.xlabel("number of rounds")
 	plt.ylabel("time in milliseconds")
 	plt.plot(x_axis, y_axis)
-	plt.axis([0, 500, 0, y_axis[4]])
+	plt.axis([0, 600, 0, (int(y_axis[4] / 1000) + 1) * 1000])
 	plt.savefig('test1.png')
 
 	#Test 2, number of nodes v.s. time
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 	plt.xlabel("number of nodes")
 	plt.ylabel("time in miliseconds")
 	plt.plot(x_axis, y_axis)
-	plt.axis([0, 200, 0, y_axis[4] * 1e3])
+	plt.axis([0, 600, 0, (int(y_axis[4] / 1000) + 1) * 1000])
 	plt.savefig('test2.png')
 
 	print("Tests done")
