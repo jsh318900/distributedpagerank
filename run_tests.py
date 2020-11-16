@@ -18,7 +18,7 @@ if __name__ == '__main__':
 	print("Running Test 1")
 
 	init_num_walks = int(m.log(100))
-	x_axis = [100, 200, 250, 500]
+	x_axis = [10, 50, 100, 150, 200]
 	y_axis = []
 	
 	for round in x_axis:
@@ -39,14 +39,14 @@ if __name__ == '__main__':
 	plt.xlabel("number of rounds")
 	plt.ylabel("time in seconds")
 	plt.plot(x_axis, y_axis)
-	plt.axis([0, 500, 0, (int(y_axis[3] / 100) + 1) * 100])
+	plt.axis([0, 200, 0, (int(y_axis[4] / 10) + 1) * 10])
 	plt.savefig('test1.png')
 
 	#Test 2, number of nodes v.s. time
 	#Fix number of rounds to 100
 
 	print("Running Test 2")
-	x_axis = [100, 200, 250, 500]
+	x_axis = [10, 50, 100, 150, 200]
 	y_axis = []
 	num_rounds = 100
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 	plt.xlabel("number of nodes")
 	plt.ylabel("time in seconds")
 	plt.plot(x_axis, y_axis)
-	plt.axis([0, 500, 0, (int(y_axis[3] / 100) + 1) * 100])
+	plt.axis([0, 200, 0, (int(y_axis[4] / 10) + 1) * 10])
 	plt.savefig('test2.png')
 
 	print("Tests done")
