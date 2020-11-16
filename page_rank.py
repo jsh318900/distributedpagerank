@@ -69,6 +69,7 @@ def pagerank(num_rounds, initial_coupon_count, graph, send_pipes, recv_pipes, re
             num_visits[node] += count
         
         num_rounds -= 1
+        print(num_rounds)
 
     max_node = None
     max_visits = -1
