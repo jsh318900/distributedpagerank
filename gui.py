@@ -45,8 +45,7 @@ class GUI:
         
         # Run the algorithm
         graph = get_graph(title, int(numNodes))
-        send_pipes, recv_pipes = get_graph_in_pipes(graph)
-        max_node = pagerank(num_rounds, start_num_walks, graph, send_pipes, recv_pipes, reset_probability)
+        max_node = pagerank(num_rounds, start_num_walks, graph, reset_probability)
         
         # Display the results
         self.text.config(state=tk.NORMAL)
